@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-resource-injector-config
+  namespace: {{ .Values.namespace }}
+data:
+  DEFAULT_CPU_REQUEST: "{{ .Values.defaultResources.cpuRequest }}"
+  DEFAULT_MEMORY_REQUEST: "{{ .Values.defaultResources.memoryRequest }}"
+  DEFAULT_CPU_LIMIT: "{{ .Values.defaultResources.cpuLimit }}"
+  DEFAULT_MEMORY_LIMIT: "{{ .Values.defaultResources.memoryLimit }}"

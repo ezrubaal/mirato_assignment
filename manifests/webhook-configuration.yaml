@@ -1,0 +1,19 @@
+apiVersion: admissionregistration.k8s.io/v1
+kind: MutatingWebhookConfiguration
+metadata:
+  name: resource-injector
+webhooks:
+  - name: resource.injector.k8s.io
+    clientConfig:
+      service:
+        name: resource-injector
+        namespace: kube-system
+        path: /mutate
+      caBundle: ""  # Populate dynamically or through a cert manager
+    admissionReviewVersions: ["v1", "v1beta1"]
+    sideEffects: None
+    rules:
+    - apiGroups: [""]
+      apiVersions: ["v1"]
+      resources: ["pods"]
+      operations: ["CREATE"]

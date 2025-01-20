@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: resource-injector
+  namespace: kube-system
+  labels:
+    app: resource-injector
+spec:
+  ports:
+  - name: webhook
+    port: 443
+    targetPort: 8443
+  selector:
+    app: resource-injector

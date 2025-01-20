@@ -1,0 +1,72 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: resource-injector
+  namespace: kube-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: resource-injector
+  template:
+    metadata:
+      labels:
+        app: resource-injector
+    spec:
+      containers:
+      - name: resource-injector
+        image: resource-injector:latest
+        ports:
+        - containerPort: 8443
+        volumeMounts:
+        - name: webhook-certs
+          mountPath: /certs
+          readOnly: true
+      volumes:
+      - name: webhook-certs
+        secret:
+          secretName: resource-injector-certs
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: resource-injector
+  namespace: kube-system
+spec:
+  ports:
+  - port: 443
+    targetPort: 8443
+  selector:
+    app: resource-injector
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: MutatingWebhookConfiguration
+metadata:
+  name: resource-injector-webhook
+webhooks:
+  - name: resource.injector.k8s.io
+    clientConfig:
+      service:
+        name: resource-injector
+        namespace: kube-system
+        path: /mutate
+      caBundle: "<CA_BUNDLE_PLACEHOLDER>"
+    admissionReviewVersions: ["v1", "v1beta1"]
+    sideEffects: None
+    rules:
+    - apiGroups: [""]
+      apiVersions: ["v1"]
+      resources: ["pods"]
+      operations: ["CREATE"]
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: resource-injector-config
+  namespace: kube-system
+data:
+  DEFAULT_CPU_REQUEST: "500m"
+  DEFAULT_MEMORY_REQUEST: "512Mi"
+  DEFAULT_CPU_LIMIT: "1000m"
+  DEFAULT_MEMORY_LIMIT: "1Gi"

@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-resource-injector
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: resource-injector
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: resource-injector
+  template:
+    metadata:
+      labels:
+        app: resource-injector
+    spec:
+      containers:
+      - name: resource-injector
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+        - containerPort: 8443
+        - containerPort: 9000
+        env:
+        - name: DEFAULT_CPU_REQUEST
+          value: "{{ .Values.defaultResources.cpuRequest }}"
+        - name: DEFAULT_MEMORY_REQUEST
+          value: "{{ .Values.defaultResources.memoryRequest }}"
+        - name: DEFAULT_CPU_LIMIT
+          value: "{{ .Values.defaultResources.cpuLimit }}"
+        - name: DEFAULT_MEMORY_LIMIT
+          value: "{{ .Values.defaultResources.memoryLimit }}"

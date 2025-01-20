@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: resource-injector
+  namespace: kube-system
+  labels:
+    app: resource-injector
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: resource-injector
+  template:
+    metadata:
+      labels:
+        app: resource-injector
+    spec:
+      containers:
+      - name: resource-injector
+        image: your-docker-registry/resource-injector:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8443
+        - containerPort: 9000
+        env:
+        - name: DEFAULT_CPU_REQUEST
+          value: "500m"
+        - name: DEFAULT_MEMORY_REQUEST
+          value: "512Mi"
+        - name: DEFAULT_CPU_LIMIT
+          value: "1000m"
+        - name: DEFAULT_MEMORY_LIMIT
+          value: "1Gi"

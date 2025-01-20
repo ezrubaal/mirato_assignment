@@ -1,0 +1,17 @@
+namespace: kube-system
+
+replicaCount: 1
+
+image:
+  repository: your-docker-registry/resource-injector
+  tag: latest
+  pullPolicy: IfNotPresent
+
+defaultResources:
+  cpuRequest: "500m"
+  memoryRequest: "512Mi"
+  cpuLimit: "1000m"
+  memoryLimit: "1Gi"
+
+webhook:
+  caBundle: ""  # To be populated dynamically or managed separately
